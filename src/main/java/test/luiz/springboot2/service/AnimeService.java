@@ -1,8 +1,11 @@
 package test.luiz.springboot2.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.server.ResponseStatusException;
 import test.luiz.springboot2.domain.Anime;
 import test.luiz.springboot2.exception.BadRequestException;
@@ -20,7 +23,13 @@ public class AnimeService {
 
     private final AnimeRepository animeRepository;
 
-    public List<Anime> listAll() { return animeRepository.findAll(); }
+    public List<Anime> listAllNonPageable() {
+        return animeRepository.findAll();
+    }
+
+    public Page<Anime> listAll(Pageable pageable) {
+        return animeRepository.findAll(pageable);
+    }
 
     public Anime findByIdOrTrowBadRequestException(long id){
         return animeRepository.findById(id)
@@ -29,6 +38,8 @@ public class AnimeService {
 
     @Transactional
     public Anime save(AnimePostRequestBody animePostRequestBody) {
+//        Anime anime = AnimeMapper.INSTANCE.toAnime(animePostRequestBody);
+//        if (anime.getName().equals("Naruto")){throw new MethodArgumentNotValidException();}
         return animeRepository.save(AnimeMapper.INSTANCE.toAnime(animePostRequestBody));
     }
 
